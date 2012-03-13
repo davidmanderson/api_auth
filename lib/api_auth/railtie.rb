@@ -43,9 +43,15 @@ module ApiAuth
         def self.included(base)
           base.extend(ClassMethods)
         
-          base.class_inheritable_accessor :hmac_access_id
-          base.class_inheritable_accessor :hmac_secret_key
-          base.class_inheritable_accessor :use_hmac
+          if base.respond_to? :class_inheritable_accessor
+            base.class_inheritable_accessor :hmac_access_id
+            base.class_inheritable_accessor :hmac_secret_key
+            base.class_inheritable_accessor :use_hmac
+          else
+            base.class_attribute :hmac_access_id
+            base.class_attribute :hmac_secret_key
+            base.class_attribute :use_hmac
+          end
         end
       
         module ClassMethods
