@@ -22,19 +22,18 @@ module ApiAuth
     #
     # secret_key: assigned secret key that is known to both parties 
     def sign!(request, access_id, secret_key)
-      headers = Headers.new(request)
-      headers.sign_header auth_header(request, access_id, secret_key)
+      nonce = "#{Time.new.to_i}:#{rand(36**8).to_s(36)}"
+      headers = Headers.new(request)     
+      headers.sign_header auth_header(request, nonce, access_id, secret_key)
     end
     
     # Determines if the request is authentic given the request and the client's
     # secret key. Returns true if the request is authentic and false otherwise.
     def authentic?(request, secret_key)
       return false if secret_key.nil?
-      
       headers = Headers.new(request)
-      if match_data = parse_auth_header(headers.authorization_header)
-        hmac = match_data[2]
-        return hmac == hmac_signature(request, secret_key)
+      if data = parse_auth_header(headers.authorization_header)
+        return data[:secret_key] == hmac_signature(request, secret_key)
       end
       
       false
@@ -43,8 +42,8 @@ module ApiAuth
     # Returns the access id from the request's authorization header
     def access_id(request)
       headers = Headers.new(request)
-      if match_data = parse_auth_header(headers.authorization_header)
-        return match_data[1]
+      if data = parse_auth_header(headers.authorization_header)
+        return data[:access_id]
       end
       
       nil
@@ -68,12 +67,13 @@ module ApiAuth
       b64_encode(OpenSSL::HMAC.digest(digest, secret_key, canonical_string))
     end
     
-    def auth_header(request, access_id, secret_key)
-      "APIAuth #{access_id}:#{hmac_signature(request, secret_key)}"      
+    def auth_header(request, nonce, access_id, secret_key)
+      "Authorization: MAC id=#{access_id},nonce=#{nonce},mac=#{hmac_signature(request, secret_key)}"      
     end
     
     def parse_auth_header(auth_header)
-      Regexp.new("APIAuth ([^:]+):(.+)$").match(auth_header)
+      matches = Regexp.new("Authorization: MAC id=(.*),nonce=(.*),mac=(.*)").match(auth_header)
+      {:access_id => matches[1], :nonce => matches[2], :secret_key => matches[3]}
     end
     
   end # class methods
