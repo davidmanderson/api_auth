@@ -73,7 +73,7 @@ module ApiAuth
     
     def parse_auth_header(auth_header)
       matches = Regexp.new("Authorization: MAC id=(.*),nonce=(.*),mac=(.*)").match(auth_header)
-      {:access_id => matches[1], :nonce => matches[2], :secret_key => matches[3]}
+      {:access_id => matches[1], :nonce => matches[2], :secret_key => matches[3]} if matches
     end
     
   end # class methods
