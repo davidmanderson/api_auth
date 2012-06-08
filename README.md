@@ -8,8 +8,7 @@ HTTP-based applications. It implements the same authentication methods (HMAC-SHA
 used by Amazon Web Services.
 
 The gem will sign your requests on the client side and authenticate that
-signature on the server side. If your server resources are implemented as a
-Rails ActiveResource, it will integrate with that. It will even generate the
+signature on the server side. It will even generate the
 secret keys necessary for your clients to sign their requests.
 
 Since it operates entirely using HTTP headers, the server component does not
@@ -102,19 +101,6 @@ object and it's ready to be transmitted. It's recommended that you sign the
 request as one of the last steps in building the request to ensure the headers
 don't change after the signing process which would cause the authentication
 check to fail on the server side.
-
-### ActiveResource Clients ###
-
-ApiAuth can transparently protect your ActiveResource communications with a
-single configuration line:
-
-``` ruby
-    class MyResource < ActiveResource::Base
-      with_api_auth(access_id, secret_key)
-    end
-```
-
-This will automatically sign all outgoing ActiveResource requests from your app.
 
 ## Server ##
 

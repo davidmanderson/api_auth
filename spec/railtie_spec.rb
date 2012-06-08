@@ -78,28 +78,4 @@ describe "Rails integration" do
     
   end
   
-  describe "Rails ActiveResource integration" do
-    
-    class TestResource < ActiveResource::Base
-      with_api_auth "1044", API_KEY_STORE["1044"]
-      self.site = "http://localhost/"
-    end
-    
-    it "should send signed requests automagically" do
-      timestamp = Time.parse("Mon, 23 Jan 1984 03:29:56 GMT")
-      Time.should_receive(:now).at_least(1).times.and_return(timestamp)
-      ActiveResource::HttpMock.respond_to do |mock|
-        mock.get "/test_resources/1.xml", 
-          {
-            'Authorization' => 'APIAuth 1044:IbTx7VzSOGU55HNbV4y2jZDnVis=',
-            'Accept' => 'application/xml',
-            'DATE' => "Mon, 23 Jan 1984 03:29:56 GMT"
-          },
-          { :id => "1" }.to_xml(:root => 'test_resource')
-      end
-      TestResource.find(1)
-    end
-    
-  end
-  
 end

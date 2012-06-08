@@ -3,8 +3,7 @@
 # used by Amazon Web Services.
 
 # The gem will sign your requests on the client side and authenticate that 
-# signature on the server side. If your server resources are implemented as a 
-# Rails ActiveResource, it will integrate with that. It will even generate the 
+# signature on the server side. It will even generate the 
 # secret keys necessary for your clients to sign their requests.
 module ApiAuth
   
